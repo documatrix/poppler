@@ -271,9 +271,9 @@ create_annot_quads_from_poppler_quads (GArray *quads)
 
   g_assert (quads->len > 0);
 
-  quads_array = (AnnotQuadrilaterals::AnnotQuadrilateral **) g_malloc0_n (
-    sizeof (AnnotQuadrilaterals::AnnotQuadrilateral *),
-    quads->len);
+  quads_array = (AnnotQuadrilaterals::AnnotQuadrilateral **) g_malloc0 (
+    sizeof (AnnotQuadrilaterals::AnnotQuadrilateral *) * quads->len
+  );
 
   for (guint i = 0; i < quads->len; i++) {
     PopplerQuadrilateral *quadrilateral = &g_array_index (quads, PopplerQuadrilateral, i);
