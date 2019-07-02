@@ -116,6 +116,8 @@ static GBool quiet = gFalse;
 static GBool printVersion = gFalse;
 static GBool printHelp = gFalse;
 
+static GooString metaFileName;
+
 static const ArgDesc argDesc[] = {
 #if ENABLE_LIBPNG
   {"-png",    argFlag,     &png,           0,
@@ -130,6 +132,8 @@ static const ArgDesc argDesc[] = {
    "generate PostScript file"},
   {"-eps",        argFlag,     &eps,          0,
    "generate Encapsulated PostScript (EPS)"},
+  {"-metafile",    argGooString,     &metaFileName,          0,
+   "generate a metafile for the PostScript file"},
 #endif
 #if CAIRO_HAS_PDF_SURFACE
   {"-pdf",    argFlag,     &pdf,           0,
@@ -235,6 +239,7 @@ static const ArgDesc argDesc[] = {
 static  cairo_surface_t *surface;
 static  GBool printing;
 static  FILE *output_file;
+static  FILE *meta_file;
 
 #if USE_CMS
 static unsigned char *icc_data;
@@ -436,6 +441,16 @@ static cairo_status_t writeStream(void *closure, const unsigned char *data, unsi
     return CAIRO_STATUS_WRITE_ERROR;
 }
 
+static cairo_status_t writeMetaStream(void *closure, const unsigned char *data, unsigned int length)
+{
+  FILE *file = (FILE *)closure;
+
+  if (fwrite(data, length, 1, file) == 1)
+    return CAIRO_STATUS_SUCCESS;
+  else
+    return CAIRO_STATUS_WRITE_ERROR;
+}
+
 static void beginDocument(GooString *outputFileName, double w, double h)
 {
   if (printing) {
@@ -444,9 +459,20 @@ static void beginDocument(GooString *outputFileName, double w, double h)
     else
       output_file = fopen(outputFileName->getCString(), "wb");
 
+    if (metaFileName.getCString()[0]) {
+      meta_file = fopen(metaFileName.getCString(), "wb");
+      if (!meta_file) {
+        fprintf(stderr, "Error opening output metafile %s\n", metaFileName.getCString());
+        exit(2);
+      }
+    }
+
     if (ps || eps) {
 #if CAIRO_HAS_PS_SURFACE
       surface = cairo_ps_surface_create_for_stream(writeStream, output_file, w, h);
+      if (meta_file) {
+        cairo_ps_surface_add_meta_stream(surface, writeMetaStream, meta_file);
+      }
       if (level2)
 	cairo_ps_surface_restrict_to_level (surface, CAIRO_PS_LEVEL_2);
       if (eps)
@@ -582,6 +608,8 @@ static void endDocument()
       error(errInternal, -1, "cairo error: {0:s}\n", cairo_status_to_string(status));
     cairo_surface_destroy(surface);
     fclose(output_file);
+    if (meta_file)
+      fclose(meta_file);
   }
 }
 
