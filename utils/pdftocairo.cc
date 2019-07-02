@@ -145,6 +145,8 @@ static bool jpegOptimize = false;
 
 static GooString printer;
 static GooString printOpt;
+
+static GooString metaFileName;
 #ifdef CAIRO_HAS_WIN32_SURFACE
 static bool setupdlg = false;
 #endif
@@ -164,6 +166,8 @@ static const ArgDesc argDesc[] = {
 #ifdef CAIRO_HAS_PS_SURFACE
     { "-ps", argFlag, &ps, 0, "generate PostScript file" },
     { "-eps", argFlag, &eps, 0, "generate Encapsulated PostScript (EPS)" },
+  {"-metafile",    argGooString,     &metaFileName,          0,
+   "generate a metafile for the PostScript file"},
 #endif
 #ifdef CAIRO_HAS_PDF_SURFACE
     { "-pdf", argFlag, &pdf, 0, "generate a PDF file" },
@@ -234,6 +238,7 @@ static const ArgDesc argDesc[] = {
 static cairo_surface_t *surface;
 static bool printing;
 static FILE *output_file;
+static  FILE *meta_file;
 static bool usePDFPageSize;
 static cairo_antialias_t antialiasEnum = CAIRO_ANTIALIAS_DEFAULT;
 
@@ -564,6 +569,16 @@ static void getFitToPageTransform(double page_w, double page_h, double paper_w, 
 
 static cairo_status_t writeStream(void *closure, const unsigned char *data, unsigned int length)
 {
+  FILE *file = (FILE *)closure;
+
+  if (fwrite(data, length, 1, file) == 1)
+    return CAIRO_STATUS_SUCCESS;
+  else
+    return CAIRO_STATUS_WRITE_ERROR;
+}
+
+static cairo_status_t writeMetaStream(void *closure, const unsigned char *data, unsigned int length)
+{
     FILE *file = (FILE *)closure;
 
     if (fwrite(data, length, 1, file) == 1) {
@@ -578,6 +593,7 @@ static void beginDocument(GooString *inputFileName, GooString *outputFileName, d
     if (printing) {
         if (printToWin32) {
             output_file = nullptr;
+            meta_file = nullptr;
         } else {
             if (outputFileName->cmp("fd://0") == 0) {
 #if defined(_WIN32) || defined(__CYGWIN__)
@@ -591,11 +607,21 @@ static void beginDocument(GooString *inputFileName, GooString *outputFileName, d
                     exit(2);
                 }
             }
+            if (metaFileName.c_str()[0]) {
+              meta_file = fopen(metaFileName.c_str(), "wb");
+              if (!meta_file) {
+                fprintf(stderr, "Error opening output metafile %s\n", metaFileName.c_str());
+                exit(2);
+              }
+            }
         }
 
         if (ps || eps) {
 #ifdef CAIRO_HAS_PS_SURFACE
             surface = cairo_ps_surface_create_for_stream(writeStream, output_file, w, h);
+            if (meta_file) {
+              cairo_ps_surface_add_meta_stream(surface, writeMetaStream, meta_file);
+            }
             if (level2) {
                 cairo_ps_surface_restrict_to_level(surface, CAIRO_PS_LEVEL_2);
             }
@@ -765,6 +791,8 @@ static void endDocument()
         if (output_file) {
             fclose(output_file);
         }
+        if (meta_file)
+            fclose(meta_file);
     }
 }
 
