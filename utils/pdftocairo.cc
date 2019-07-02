@@ -130,6 +130,8 @@ static GBool printHelp = gFalse;
 
 static GooString printer;
 static GooString printOpt;
+
+static GooString metaFileName;
 #ifdef CAIRO_HAS_WIN32_SURFACE
 static GBool setupdlg = gFalse;
 #endif
@@ -154,6 +156,8 @@ static const ArgDesc argDesc[] = {
    "generate PostScript file"},
   {"-eps",        argFlag,     &eps,          0,
    "generate Encapsulated PostScript (EPS)"},
+  {"-metafile",    argGooString,     &metaFileName,          0,
+   "generate a metafile for the PostScript file"},
 #endif
 #if CAIRO_HAS_PDF_SURFACE
   {"-pdf",    argFlag,     &pdf,           0,
@@ -273,6 +277,7 @@ static const ArgDesc argDesc[] = {
 static  cairo_surface_t *surface;
 static  GBool printing;
 static  FILE *output_file;
+static  FILE *meta_file;
 static GBool usePDFPageSize;
 static cairo_antialias_t antialiasEnum = CAIRO_ANTIALIAS_DEFAULT;
 
@@ -546,11 +551,22 @@ static cairo_status_t writeStream(void *closure, const unsigned char *data, unsi
     return CAIRO_STATUS_WRITE_ERROR;
 }
 
+static cairo_status_t writeMetaStream(void *closure, const unsigned char *data, unsigned int length)
+{
+  FILE *file = (FILE *)closure;
+
+  if (fwrite(data, length, 1, file) == 1)
+    return CAIRO_STATUS_SUCCESS;
+  else
+    return CAIRO_STATUS_WRITE_ERROR;
+}
+
 static void beginDocument(GooString *inputFileName, GooString *outputFileName, double w, double h)
 {
   if (printing) {
     if (printToWin32) {
       output_file = NULL;
+      meta_file = NULL;
     } else {
       if (outputFileName->cmp("fd://0") == 0)
         output_file = stdout;
@@ -562,11 +578,21 @@ static void beginDocument(GooString *inputFileName, GooString *outputFileName, d
           exit(2);
         }
       }
+      if (metaFileName.getCString()[0]) {
+        meta_file = fopen(metaFileName.getCString(), "wb");
+        if (!meta_file) {
+          fprintf(stderr, "Error opening output metafile %s\n", metaFileName.getCString());
+          exit(2);
+        }
+      }
     }
 
     if (ps || eps) {
 #if CAIRO_HAS_PS_SURFACE
       surface = cairo_ps_surface_create_for_stream(writeStream, output_file, w, h);
+      if (meta_file) {
+        cairo_ps_surface_add_meta_stream(surface, writeMetaStream, meta_file);
+      }
       if (level2)
 	cairo_ps_surface_restrict_to_level (surface, CAIRO_PS_LEVEL_2);
       if (eps)
@@ -728,6 +754,8 @@ static void endDocument()
 #endif
     if (output_file)
       fclose(output_file);
+    if (meta_file)
+      fclose(meta_file);
   }
 }
 
