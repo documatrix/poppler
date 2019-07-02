@@ -29,6 +29,9 @@ if(NOT WIN32)
   if(_pc_cairo_FOUND)
     set(CAIRO_FOUND TRUE)
   endif(_pc_cairo_FOUND)
+
+  # find pixman
+  pkg_check_modules(_pc_pixman pixman-1)
 else(NOT WIN32)
   # assume so, for now
   set(CAIRO_FOUND TRUE)
@@ -41,6 +44,11 @@ if(CAIRO_FOUND)
   find_library(CAIRO_LIBRARY cairo
                HINTS ${_pc_cairo_LIBRARY_DIRS}
   )
+
+  find_library(PIXMAN_LIBRARY pixman-1
+               HINTS ${_pc_pixman_LIBRARY_DIRS}
+  )
+
   set(CAIRO_LIBRARIES "${CAIRO_LIBRARY}")
 
   find_path(CAIRO_INCLUDE_DIR cairo.h
