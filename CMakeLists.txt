@@ -455,6 +455,7 @@ if(ENABLE_XPDF_HEADERS)
     poppler/BuiltinFont.h
     poppler/BuiltinFontTables.h
     poppler/CachedFile.h
+    poppler/CairoOutputDev.h
     poppler/Catalog.h
     poppler/CharCodeToUnicode.h
     poppler/CMap.h
@@ -525,6 +526,7 @@ if(ENABLE_XPDF_HEADERS)
     poppler/XpdfPluginAPI.h
     poppler/Sound.h
     ${CMAKE_CURRENT_BINARY_DIR}/poppler/poppler-config.h
+    ${CMAKE_CURRENT_BINARY_DIR}/config.h
     DESTINATION include/poppler)
   install(FILES
     goo/GooHash.h
