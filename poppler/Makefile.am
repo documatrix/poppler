@@ -190,6 +190,7 @@ poppler_include_HEADERS =	\
 	BuiltinFont.h		\
 	BuiltinFontTables.h	\
 	CachedFile.h		\
+	CairoOutputDev.h	\
 	Catalog.h		\
 	CharCodeToUnicode.h	\
 	CMap.h			\
@@ -253,7 +254,8 @@ poppler_include_HEADERS =	\
 	SecurityHandler.h	\
 	UTF8.h			\
 	XpdfPluginAPI.h		\
-	Sound.h
+	Sound.h			\
+	$(top_builddir)/config.h
 nodist_poppler_include_HEADERS = poppler-config.h
 
 endif

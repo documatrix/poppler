@@ -48,7 +48,8 @@ poppler_glib_includedir = $(includedir)/poppler/glib
 
 poppler_glib_include_HEADERS =			\
 	$(poppler_glib_public_headers)		\
-	poppler-enums.h
+	poppler-enums.h				\
+	poppler-private.h
 nodist_poppler_glib_include_HEADERS = poppler-features.h
 
 lib_LTLIBRARIES = libpoppler-glib.la
