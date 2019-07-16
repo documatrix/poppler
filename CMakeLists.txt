@@ -656,6 +656,7 @@ if(ENABLE_UNSTABLE_API_ABI_HEADERS)
     poppler/AnnotStampImageHelper.h
     poppler/Array.h
     poppler/CachedFile.h
+    poppler/CairoOutputDev.h
     poppler/Catalog.h
     poppler/CharCodeToUnicode.h
     poppler/CMap.h
@@ -727,6 +728,7 @@ if(ENABLE_UNSTABLE_API_ABI_HEADERS)
     poppler/Sound.h
     ${CMAKE_CURRENT_BINARY_DIR}/poppler_private_export.h
     ${CMAKE_CURRENT_BINARY_DIR}/poppler/poppler-config.h
+    ${CMAKE_CURRENT_BINARY_DIR}/config.h
     poppler/SplashOutputDev.h
     DESTINATION include/poppler)
   install(FILES
