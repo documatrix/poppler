@@ -509,6 +509,7 @@ if(ENABLE_UNSTABLE_API_ABI_HEADERS)
     poppler/BuiltinFont.h
     poppler/BuiltinFontTables.h
     poppler/CachedFile.h
+    poppler/CairoOutputDev.h
     poppler/Catalog.h
     poppler/CharCodeToUnicode.h
     poppler/CMap.h
@@ -578,6 +579,7 @@ if(ENABLE_UNSTABLE_API_ABI_HEADERS)
     poppler/UTF.h
     poppler/Sound.h
     ${CMAKE_CURRENT_BINARY_DIR}/poppler/poppler-config.h
+    ${CMAKE_CURRENT_BINARY_DIR}/config.h
     DESTINATION include/poppler)
   install(FILES
     goo/GooTimer.h
