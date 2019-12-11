@@ -79,6 +79,7 @@ static GBool png = gFalse;
 static GBool jpeg = gFalse;
 static GBool ps = gFalse;
 static GBool eps = gFalse;
+static GBool noRotate = gFalse;
 static GBool pdf = gFalse;
 static GBool printToWin32 = gFalse;
 static GBool printdlg = gFalse;
@@ -154,6 +155,8 @@ static const ArgDesc argDesc[] = {
    "generate PostScript file"},
   {"-eps",        argFlag,     &eps,          0,
    "generate Encapsulated PostScript (EPS)"},
+  {"-norotate",        argFlag,     &noRotate,          0,
+   "do not rotate generated Encapsulated PostScript (EPS)"},
   {"-metafile",    argGooString,     &metaFileName,          0,
    "generate a metafile for the PostScript file"},
 #endif
@@ -581,7 +584,11 @@ static void beginDocument(GooString *inputFileName, GooString *outputFileName, d
 static void beginPage(double *w, double *h)
 {
   if (printing) {
-    if (ps || eps) {
+    if (eps && noRotate) {
+#if CAIRO_HAS_PS_SURFACE
+	cairo_ps_surface_set_size (surface, *w, *h);
+#endif
+    } else if (ps || eps) {
 #if CAIRO_HAS_PS_SURFACE
       if (*w > *h) {
 	cairo_ps_surface_dsc_comment (surface, "%%PageOrientation: Landscape");
