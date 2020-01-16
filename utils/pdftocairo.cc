@@ -554,7 +554,7 @@ static void beginPage(double w, double h)
   if (printing) {
     if (eps && noRotate) {
 #if CAIRO_HAS_PS_SURFACE
-	cairo_ps_surface_set_size (surface, *w, *h);
+	cairo_ps_surface_set_size (surface, w, h);
 #endif
     } else if (ps || eps) {
 #if CAIRO_HAS_PS_SURFACE
