@@ -133,6 +133,7 @@ static GooString printer;
 static GooString printOpt;
 
 static GooString metaFileName;
+static bool addFontPrefix = false;
 #ifdef CAIRO_HAS_WIN32_SURFACE
 static GBool setupdlg = gFalse;
 #endif
@@ -161,6 +162,8 @@ static const ArgDesc argDesc[] = {
    "do not rotate generated Encapsulated PostScript (EPS)"},
   {"-metafile",    argGooString,     &metaFileName,          0,
    "generate a metafile for the PostScript file"},
+  {"-add-font-prefix",    argFlag,     &addFontPrefix,          0,
+   "Prefix all fontnames with a hash in the generated PostScript file"},
 #endif
 #if CAIRO_HAS_PDF_SURFACE
   {"-pdf",    argFlag,     &pdf,           0,
@@ -595,6 +598,9 @@ static void beginDocument(GooString *inputFileName, GooString *outputFileName, d
       surface = cairo_ps_surface_create_for_stream(writeStream, output_file, w, h);
       if (meta_file) {
         cairo_ps_surface_add_meta_stream(surface, writeMetaStream, meta_file);
+      }
+      if (addFontPrefix) {
+        cairo_ps_surface_set_add_font_prefix(surface, true);
       }
       if (level2)
 	cairo_ps_surface_restrict_to_level (surface, CAIRO_PS_LEVEL_2);
