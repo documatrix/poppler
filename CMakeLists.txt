@@ -137,7 +137,7 @@ set(TEXTOUT_WORD_LIST ON)
 
 # setting the minimum required versions for some components
 set(CAIRO_VERSION "1.16.0")
-set(GLIB_REQUIRED "2.64")
+set(GLIB_REQUIRED "2.56")
 set(GTK_REQUIRED "3.24")
 set(GDK_PIXBUF_REQUIRED "2.40")
 set(FREETYPE_VERSION "2.10")
