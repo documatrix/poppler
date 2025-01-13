@@ -41,12 +41,33 @@ if(CAIRO_FOUND)
   # set it back as false
   set(CAIRO_FOUND FALSE)
 
-  find_library(CAIRO_LIBRARY cairo
-               HINTS ${_pc_cairo_LIBRARY_DIRS}
-  )
+  find_library(CAIRO_LIBRARY cairo HINTS ${_pc_cairo_LIBRARY_DIRS} )
 
-  find_library(PIXMAN_LIBRARY pixman-1
-               HINTS ${_pc_pixman_LIBRARY_DIRS}
+  find_library(WIN32_PIXMAN_LIBRARY libpixman-1.a)
+  find_library(WIN32_JPEG_LIBRARY libjpeg.a)
+  find_library(WIN32_PNG16_LIBRARY libpng16.a)
+  find_library(WIN32_FREETYPE_LIBRARY libfreetype.a)
+  find_library(WIN32_STDCPP_LIBRARY libstdc++.a)
+  find_library(WIN32_WINPTHREAD_LIBRARY libwinpthread.a)
+  find_library(WIN32_LCMS2_LIBRARY liblcms2.a)
+  find_library(WIN32_ZLIB_LIBRARY libz.a)
+  find_library(WIN32_BZIP2_LIBRARY libbz2.a)
+  find_library(WIN32_TIFF_LIBRARY libtiff.a)
+  set(WIN32_POPPLER_LIBRARY "${CMAKE_BINARY_DIR}/libpoppler.a")
+
+  set(WIN32_LIBRARIES
+    ${WIN32_POPPLER_LIBRARY}
+    ${WIN32_PIXMAN_LIBRARY}
+    ${WIN32_GCC_S_LIBRARY}
+    ${WIN32_JPEG_LIBRARY}
+    ${WIN32_PNG16_LIBRARY}
+    ${WIN32_FREETYPE_LIBRARY}
+    ${WIN32_STDCPP_LIBRARY}
+    ${WIN32_WINPTHREAD_LIBRARY}
+    ${WIN32_LCMS2_LIBRARY}
+    ${WIN32_ZLIB_LIBRARY}
+    ${WIN32_BZIP2_LIBRARY}
+    ${WIN32_TIFF_LIBRARY}
   )
 
   set(CAIRO_LIBRARIES "${CAIRO_LIBRARY}")
