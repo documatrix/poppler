@@ -53,6 +53,7 @@ if(CAIRO_FOUND)
   find_library(WIN32_ZLIB_LIBRARY libz.a)
   find_library(WIN32_BZIP2_LIBRARY libbz2.a)
   find_library(WIN32_TIFF_LIBRARY libtiff.a)
+  find_library(WIN32_OPENJP2_LIBRARY libopenjp2.a)
   set(WIN32_POPPLER_LIBRARY "${CMAKE_BINARY_DIR}/libpoppler.a")
 
   set(WIN32_LIBRARIES
@@ -68,6 +69,7 @@ if(CAIRO_FOUND)
     ${WIN32_ZLIB_LIBRARY}
     ${WIN32_BZIP2_LIBRARY}
     ${WIN32_TIFF_LIBRARY}
+    ${WIN32_OPENJP2_LIBRARY}
   )
 
   set(CAIRO_LIBRARIES "${CAIRO_LIBRARY}")
